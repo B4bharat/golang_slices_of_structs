@@ -119,7 +119,7 @@ func main() {
 	for i := 0; i < len(showDates); i++ {
 		currShowTime := showDates[i].ArrShowTimes
 		// - save showDateCode in a variable
-		// showDateCode := showDates[i].ShowDateCode
+		showDateCode := showDates[i].ShowDateCode
 
 		// for every showdate, loop through showTimes
 		for j := 0; j < len(currShowTime); j++ {
@@ -171,6 +171,7 @@ func main() {
 
 						ticketCode := etCode + "-" + sessionId + "-" + priceCode
 						ticketGroups[idx].tickets = append(ticketGroups[idx].tickets, ticketCode)
+						ticketGroups[idx].dates = append(ticketGroups[idx].dates, showDateCode)
 
 						// No need to create a new ticket group
 						tgNameExists = true
@@ -179,12 +180,17 @@ func main() {
 				}
 
 				if tgNameExists == false {
-
 					ticketCode := etCode + "-" + sessionId + "-" + priceCode
-					newTickets := make([]string, 1)
-					newTickets = append(newTickets, ticketCode)
+					// TODO: BETTER SOLUTION FOR THIS
+					//appending ticketcode
+					newTicketCode := make([]string, 1)
+					newTicketCode = append(newTicketCode, ticketCode)
 
-					newTicketGroup := ticketGroupsDetails{name: ticketGroupName, description: "", tickets: newTickets}
+					//appending showdateCode into 'dates'
+					newDate := make([]string, 1)
+					newDate = append(newDate, showDateCode)
+
+					newTicketGroup := ticketGroupsDetails{name: ticketGroupName, description: "", tickets: newTicketCode, dates: newDate}
 					ticketGroups = append(ticketGroups, newTicketGroup)
 				}
 			}
