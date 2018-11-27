@@ -113,6 +113,7 @@ func main() {
 
 	ticketGroups := make([]ticketGroupsDetails, 1)
 	etCode := "ET00085207"
+	// venueCode := uapiVenueDetails.VenueCode
 
 	showDates := uapiVenueDetails.ArrShowDates
 	// 1st loop showdates
@@ -129,9 +130,7 @@ func main() {
 			currCategoryDetail := currShowTime[j].ArrCategory
 			// for every showtime, loop through categoryDetails
 			for k := 0; k < len(currCategoryDetail); k++ {
-				/*
-					- showDateCode into dates array && check 'dateRange' struct if showDateCode <= startDate then startDate = showDateCode else if >= endDate then endDate = showDateCode
-				*/
+
 				// - save priceCode in a variable
 				priceCode := currCategoryDetail[k].PriceCode
 
@@ -172,7 +171,15 @@ func main() {
 						ticketCode := etCode + "-" + sessionId + "-" + priceCode
 						ticketGroups[idx].tickets = append(ticketGroups[idx].tickets, ticketCode)
 						ticketGroups[idx].dates = append(ticketGroups[idx].dates, showDateCode)
-
+						if ticketGroups[idx].dateRange.startDate > showDateCode {
+							ticketGroups[idx].dateRange.startDate = showDateCode
+						}
+						if ticketGroups[idx].dateRange.endDate < showDateCode {
+							ticketGroups[idx].dateRange.endDate = showDateCode
+						}
+						/*
+							- showDateCode into dates array && check 'dateRange' struct if showDateCode <= startDate then 	 startDate = showDateCode else if >= endDate then endDate = showDateCode
+						*/
 						// No need to create a new ticket group
 						tgNameExists = true
 						break
@@ -190,7 +197,19 @@ func main() {
 					newDate := make([]string, 1)
 					newDate = append(newDate, showDateCode)
 
-					newTicketGroup := ticketGroupsDetails{name: ticketGroupName, description: "", tickets: newTicketCode, dates: newDate}
+					newTicketGroup := ticketGroupsDetails{
+						name:        ticketGroupName,
+						description: "",
+						tickets:     newTicketCode,
+						dates:       newDate,
+						dateRange: struct {
+							startDate string
+							endDate   string
+						}{
+							startDate: showDateCode,
+							endDate:   showDateCode,
+						},
+					}
 					ticketGroups = append(ticketGroups, newTicketGroup)
 				}
 			}
