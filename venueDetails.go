@@ -95,6 +95,8 @@ func main() {
 		},
 	}
 
+	// Response data structure below
+
 	type dateRangeDetails struct {
 		startDate string
 		endDate   string
@@ -113,7 +115,7 @@ func main() {
 
 	ticketGroups := make([]ticketGroupsDetails, 1)
 	etCode := "ET00085207"
-	// venueCode := uapiVenueDetails.VenueCode
+	venueCode := uapiVenueDetails.VenueCode
 
 	showDates := uapiVenueDetails.ArrShowDates
 	// 1st loop showdates
@@ -145,8 +147,34 @@ func main() {
 
 				// if ticketGroupNames doesn't exists, then create a 'name' property in the 'tickGroups' struct and add the curr value
 				fmt.Println(ticketGroupName)
-				for idx, _ := range ticketGroups {
+				for idx := range ticketGroups {
 					if ticketGroups[idx].name == ticketGroupName {
+
+						ticketCode := etCode + "-" + sessionId + "-" + priceCode
+						ticketGroups[idx].tickets = append(ticketGroups[idx].tickets, ticketCode)
+						ticketGroups[idx].dates = append(ticketGroups[idx].dates, showDateCode)
+
+						/*
+							- showDateCode into dates array && check 'dateRange' struct if showDateCode <= startDate then 	 startDate = showDateCode else if >= endDate then endDate = showDateCode
+						*/
+						if ticketGroups[idx].dateRange.startDate > showDateCode {
+							ticketGroups[idx].dateRange.startDate = showDateCode
+						}
+						if ticketGroups[idx].dateRange.endDate < showDateCode {
+							ticketGroups[idx].dateRange.endDate = showDateCode
+						}
+
+						venueCodeExists := false
+						for vIdx := range ticketGroups[idx].venueCodes {
+							if ticketGroups[idx].venueCodes[vIdx] == venueCode {
+								venueCodeExists = true
+							}
+						}
+
+						if venueCodeExists == false {
+							ticketGroups[idx].venueCodes = append(ticketGroups[idx].venueCodes, venueCode)
+						}
+
 						/*
 							- switch (name) - set 'description', based on equivalent 'name'
 								name: description
@@ -167,19 +195,6 @@ func main() {
 						default:
 
 						}
-
-						ticketCode := etCode + "-" + sessionId + "-" + priceCode
-						ticketGroups[idx].tickets = append(ticketGroups[idx].tickets, ticketCode)
-						ticketGroups[idx].dates = append(ticketGroups[idx].dates, showDateCode)
-						if ticketGroups[idx].dateRange.startDate > showDateCode {
-							ticketGroups[idx].dateRange.startDate = showDateCode
-						}
-						if ticketGroups[idx].dateRange.endDate < showDateCode {
-							ticketGroups[idx].dateRange.endDate = showDateCode
-						}
-						/*
-							- showDateCode into dates array && check 'dateRange' struct if showDateCode <= startDate then 	 startDate = showDateCode else if >= endDate then endDate = showDateCode
-						*/
 						// No need to create a new ticket group
 						tgNameExists = true
 						break
@@ -197,11 +212,15 @@ func main() {
 					newDate := make([]string, 1)
 					newDate = append(newDate, showDateCode)
 
+					newVenueCode := make([]string, 1)
+					newVenueCode = append(newVenueCode, venueCode)
+
 					newTicketGroup := ticketGroupsDetails{
 						name:        ticketGroupName,
 						description: "",
 						tickets:     newTicketCode,
 						dates:       newDate,
+						venueCodes:  newVenueCode,
 						dateRange: struct {
 							startDate string
 							endDate   string
