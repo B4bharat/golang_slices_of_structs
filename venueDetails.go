@@ -186,7 +186,7 @@ func main() {
 			// for every showdate, loop through showTimes
 			for j := 0; j < len(currShowTime); j++ {
 				// - save sessionId in a variable
-				sessionId := currShowTime[j].SessionID
+				sessionID := currShowTime[j].SessionID
 
 				currCategoryDetail := currShowTime[j].ArrCategory
 				// for every showtime, loop through categoryDetails
@@ -209,7 +209,7 @@ func main() {
 					for idx := range ticketGroups {
 						if ticketGroups[idx].name == ticketGroupName {
 
-							ticketCode := etCode + "-" + sessionId + "-" + priceCode
+							ticketCode := etCode + "-" + sessionID + "-" + priceCode
 							ticketGroups[idx].tickets = append(ticketGroups[idx].tickets, ticketCode)
 							ticketGroups[idx].dates = append(ticketGroups[idx].dates, showDateCode)
 
@@ -261,7 +261,7 @@ func main() {
 					}
 
 					if tgNameExists == false {
-						ticketCode := etCode + "-" + sessionId + "-" + priceCode
+						ticketCode := etCode + "-" + sessionID + "-" + priceCode
 						// TODO: BETTER SOLUTION FOR THIS
 						//appending ticketcode
 						newTicketCode := make([]string, 1)
